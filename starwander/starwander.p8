@@ -37,10 +37,8 @@ o.pos={x=x,y=y}
 o.speed=speed
 if(speed>2.98) then
 	o.brightness=8
-elseif(speed>2) then
+elseif(speed>1.2) then
  o.brightness=6
-elseif(speed<.5) then
- o.brightness=1
 else
  o.brightness=5
 end
