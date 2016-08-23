@@ -8,7 +8,6 @@ end
 scopeconstruct=function(x,y)
 local o={}
 o.pos={x=x,y=y}
-o.hitbox={x=6,y=6,w=4,h=4}
 o.state=0
 o.speed=3
 o.control=function(o)
@@ -30,8 +29,10 @@ o.examine=function(scope,star)
  for star in all(stars) do
   if look(scope,star) then
    scope.state=1
+   star.state=1
   else
    scope.state=0
+   star.state=0
   end
  end
 end
@@ -39,23 +40,39 @@ end
 o.draw=function(o)
  if (o.state==0) then
   sspr(0,0,16,16,o.pos.x,o.pos.y)
+  print(o.state,2,2,4)
  elseif (o.state==1) then
   sspr(16,0,32,16,o.pos.x,o.pos.y)
+  print(o.state,2,2,4)
  end 
 end
 
 return o
 end
 
-starconstruct=function(x,y,song)
+starconstruct=function(x,y,star,h,nh)
 local o={}
+
+--star position
 o.pos={x=x,y=y}
-o.hitbox={x=3,y=3,w=2,h=2}
+
+--number of planets
+o.planets={habitable=h,nonhabitable=nh}
+
+--star designation
+o.star=star
+
+--state machine
 o.state=0
-o.song=song
 
 o.draw=function(o)
- spr(48,o.pos.x,o.pos.y) 
+ if (o.state==1) then
+  local name=((o.star)s(o.planets.habitable)e(o.planets.nonhabitable)g)
+  spr(48,o.pos.x,o.pos.y)
+  print(name,o.pos.x+30,o.pos.y-2,7)
+ else
+  spr(48,o.pos.x,o.pos.y)
+ end
 end
 
 return o
@@ -63,10 +80,10 @@ end
 
 function look(obj,other)
  if
-  other.pos.x+other.hitbox.x+other.hitbox.w > obj.pos.x+obj.hitbox.x and 
-  other.pos.y+other.hitbox.y+other.hitbox.h > obj.pos.y+obj.hitbox.y and
-  other.pos.x+other.hitbox.x < obj.pos.x+obj.hitbox.x+obj.hitbox.w and
-  other.pos.y+other.hitbox.y < obj.pos.y+obj.hitbox.y+obj.hitbox.h 
+  other.pos.x+3 > obj.pos.x+4 and 
+  other.pos.y+3 > obj.pos.y+4 and
+  other.pos.x+3 < obj.pos.x+11 and
+  other.pos.y+3 < obj.pos.y+11 
  then
   return true
  end
@@ -100,8 +117,9 @@ end
 
 starcount=0
 stars.create=function()
- if (starcount<100) then
-  add(stars,starconstruct(rnd(128),rnd(128),7))
+ if (starcount<1) then
+  --add(stars,starconstruct(flr(rnd(128)),flr(rnd(128)),7))
+  add(stars,starconstruct(50,50,#stars,3,4))
   starcount+=1
  end
 end
