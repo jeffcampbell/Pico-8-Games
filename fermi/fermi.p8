@@ -67,7 +67,7 @@ o.state=0
 
 o.draw=function(o)
  if (o.state==1) then
-  local name=((o.star)s(o.planets.habitable)e(o.planets.nonhabitable)g)
+  local name=(o.star .. "s" .. o.planets.habitable .. "e" .. o.planets.nonhabitable .. "g")
   spr(48,o.pos.x,o.pos.y)
   print(name,o.pos.x+30,o.pos.y-2,7)
  else
