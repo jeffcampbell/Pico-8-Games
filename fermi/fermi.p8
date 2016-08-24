@@ -28,10 +28,10 @@ end
 o.examine=function(scope,star)
  for star in all(stars) do
   if look(scope,star) then
-   scope.state=1
+  -- scope.state=1
    star.state=1
   else
-   scope.state=0
+  -- scope.state=0
    star.state=0
   end
  end
@@ -66,12 +66,14 @@ o.star=star
 o.state=0
 
 o.draw=function(o)
+  spr(48,o.pos.x,o.pos.y)
+end
+
+o.drawname=function(o)
  if (o.state==1) then
   local name=(o.star .. "s" .. o.planets.habitable .. "e" .. o.planets.nonhabitable .. "g")
-  spr(48,o.pos.x,o.pos.y)
-  print(name,o.pos.x+30,o.pos.y-2,7)
+  print(name,o.pos.x-8,o.pos.y+16,9)
  else
-  spr(48,o.pos.x,o.pos.y)
  end
 end
 
@@ -112,14 +114,18 @@ stars={}
 stars.draw=function()
  foreach(stars, function(o)
   o.draw(o)
+  o.drawname(o)
  end)
 end
 
 starcount=0
 stars.create=function()
- if (starcount<1) then
-  --add(stars,starconstruct(flr(rnd(128)),flr(rnd(128)),7))
-  add(stars,starconstruct(50,50,#stars,3,4))
+ if (starcount<100) then
+  local x=flr(rnd(128))
+  local y=flr(rnd(128))
+  local habitable=flr(rnd(3))
+  local nonhabitable=flr(rnd(10))
+  add(stars,starconstruct(x,y,#stars,habitable,nonhabitable))
   starcount+=1
  end
 end
