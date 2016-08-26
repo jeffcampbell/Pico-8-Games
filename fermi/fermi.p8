@@ -40,10 +40,8 @@ end
 o.draw=function(o)
  if (o.state==0) then
   sspr(0,0,16,16,o.pos.x,o.pos.y)
-  print(o.state,2,2,4)
  elseif (o.state==1) then
   sspr(16,0,32,16,o.pos.x,o.pos.y)
-  print(o.state,2,2,4)
  end 
 end
 
@@ -65,6 +63,20 @@ o.star=star
 --state machine
 o.state=0
 
+--makes name scrolling work
+o.namecount=10
+
+--assign text color based on habital planets
+if (o.planets.habitable>3) then
+ o.namecolor=11
+elseif (o.planets.habitable>2) then
+ o.namecolor=10
+elseif (o.planets.habitable>1) then
+ o.namecolor=9
+else
+ o.namecolor=8
+end
+
 o.draw=function(o)
   spr(48,o.pos.x,o.pos.y)
 end
@@ -72,8 +84,13 @@ end
 o.drawname=function(o)
  if (o.state==1) then
   local name=(o.star .. "s" .. o.planets.habitable .. "e" .. o.planets.nonhabitable .. "g")
-  print(name,o.pos.x-8,o.pos.y+16,9)
+  print(sub(name,o.namecount),o.pos.x-7,o.pos.y+17,5)
+  print(sub(name,o.namecount),o.pos.x-8,o.pos.y+16,o.namecolor) 
+   if (o.namecount>0) then
+    o.namecount-=0.5
+   end
  else
+ o.namecount=10
  end
 end
 
@@ -123,7 +140,7 @@ stars.create=function()
  if (starcount<100) then
   local x=flr(rnd(128))
   local y=flr(rnd(128))
-  local habitable=flr(rnd(3))
+  local habitable=flr(rnd(5))
   local nonhabitable=flr(rnd(10))
   add(stars,starconstruct(x,y,#stars,habitable,nonhabitable))
   starcount+=1
