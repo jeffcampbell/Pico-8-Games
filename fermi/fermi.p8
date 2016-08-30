@@ -33,10 +33,15 @@ o.examine=function(scope,system)
    system.state=1
    if (btnp(4)) then
     zoomstate=1
+    system.planetdetail=1
     zoomdetails=system
    end
   else
    system.state=0
+  end
+  if (btn(5)) then
+   zoomstate=0
+   system.planetdetail=0
   end
  end
 end
@@ -72,6 +77,7 @@ o.starcolor=starcolor
 
 --state machine
 o.state=0
+o.planetdetail=0
 
 --makes name scrolling work
 o.namecount=10
@@ -126,7 +132,7 @@ o.planetcreate=function(o)
   
   local name=test
   local sx=0
-  local sy=32
+  local sy=48
   local posx=flr(rnd(128))
   local posy=flr(rnd(128))
  
@@ -142,7 +148,7 @@ o.planetcreate=function(o)
 end
 
 o.planetdraw=function(o)
- if (zoomstate==1 and o.state==1) then
+ if (zoomstate==1 and o.planetdetail==1) then
   for planet in all(o.habitable) do
    sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
   end
@@ -243,9 +249,6 @@ function _update()
  systems.create()
  systems.update()
  scopes.update()
- if (btn(5)) then
-  zoomstate=0
- end
 end
 
 function _draw()
