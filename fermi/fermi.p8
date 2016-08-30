@@ -4,7 +4,6 @@ __lua__
 function _init()
 zoomstate=0
 zoomdetails={}
-rndpos=flr(rnd(128))
 add(scopes,scopeconstruct(64,64))
 end
 
@@ -111,9 +110,9 @@ o.planetcreate=function(o)
  
   local name=test
   local sx=0
-  local sy=0
-  local posx=32
-  local posy=32
+  local sy=32
+  local posx=flr(rnd(128))
+  local posy=flr(rnd(128))
  
   if (#o.habitable<o.planets.habitable) then
   add(o.habitable,planetconstruct(
@@ -185,13 +184,13 @@ systems.draw=function()
  foreach(systems, function(o)
   o.draw(o)
   o.drawname(o)
-  o.planetdraw(o)
  end)
 end
 
 zoomdraw=function()
  circfill(60,60,6,zoomdetails.starcolor)
  foreach(systems, function(o)
+  o.planetdraw(o)
  end)
 end
 
