@@ -4,6 +4,7 @@ __lua__
 function _init()
 zoomstate=0
 zoomdetails={}
+rndpos=flr(rnd(128))
 add(scopes,scopeconstruct(64,64))
 end
 
@@ -52,14 +53,17 @@ end
 return o
 end
 
-systemconstruct=function(x,y,system,h,nh,starcolor)
+systemconstruct=function(x,y,system,h,uh,starcolor)
 local o={}
 
 --star position
 o.pos={x=x,y=y}
 
 --number of planets
-o.planets={habitable=h,nonhabitable=nh}
+o.planets={habitable=h,unhabitable=uh}
+
+o.habitable={}
+o.unhabitable={}
 
 --system designation
 o.system=system
@@ -90,9 +94,10 @@ end
 
 o.drawname=function(o)
  if (o.state==1) then
-  local name=(o.system .. "s" .. o.planets.habitable .. "e" .. o.planets.nonhabitable .. "g")
+  local name=(o.system .. "s" .. o.planets.habitable .. "e" .. o.planets.unhabitable .. "g")
   print(sub(name,o.namecount),o.pos.x-7,o.pos.y+17,5)
   print(sub(name,o.namecount),o.pos.x-8,o.pos.y+16,o.namecolor) 
+  
    if (o.namecount>0) then
     o.namecount-=0.5
    end
@@ -101,9 +106,46 @@ o.drawname=function(o)
  end
 end
 
-o.planetdraw=function(o)
-  local hxy={x={0,16,32},y={32}}
+
+o.planetcreate=function(o)
+ 
+  local name=test
+  local sx=0
+  local sy=0
+  local posx=32
+  local posy=32
+ 
+  if (#o.habitable<o.planets.habitable) then
+  add(o.habitable,planetconstruct(
+   name,
+   sx,
+   sy,
+   posx,
+   posy
+   ))
+  end
 end
+
+o.planetdraw=function(o)
+ if (zoomstate==1) then
+  for planet in all(o.habitable) do
+   sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+  end
+ end
+end
+
+return o
+end
+
+
+planetconstruct=function(name,sx,sy,posx,posy)
+local o={}
+
+o.name=name
+o.sx=sx
+o.sy=sy
+o.posx=posx
+o.posy=posy
 
 return o
 end
@@ -143,13 +185,13 @@ systems.draw=function()
  foreach(systems, function(o)
   o.draw(o)
   o.drawname(o)
+  o.planetdraw(o)
  end)
 end
 
 zoomdraw=function()
  circfill(60,60,6,zoomdetails.starcolor)
  foreach(systems, function(o)
-  o.planetdraw(o)
  end)
 end
 
@@ -159,22 +201,29 @@ systems.create=function()
   local x=flr(rnd(128))
   local y=flr(rnd(128))
   local habitable=flr(rnd(5))
-  local nonhabitable=flr(rnd(10))
+  local unhabitable=flr(rnd(10))
   local starcolor=flr(rnd(2))+8
   add(systems,systemconstruct(
    x,
    y,
    #systems,
    habitable,
-   nonhabitable,
+   unhabitable,
    starcolor
    ))
   systemcount+=1
  end
 end
 
+systems.update=function()
+ foreach(systems, function(o)
+  o.planetcreate(o)
+ end)
+end
+
 function _update()
  systems.create()
+ systems.update()
  scopes.update()
  if (btn(5)) then
   zoomstate=0
