@@ -108,14 +108,30 @@ end
 
 o.planetcreate=function(o)
  
+  local hname=test
+  local hsx=0
+  local hsy=32
+  local hposx=flr(rnd(128))
+  local hposy=flr(rnd(128))
+ 
+  if (#o.habitable<o.planets.habitable) then
+  add(o.habitable,planetconstruct(
+   hname,
+   hsx,
+   hsy,
+   hposx,
+   hposy
+   ))
+  end
+  
   local name=test
   local sx=0
   local sy=32
   local posx=flr(rnd(128))
   local posy=flr(rnd(128))
  
-  if (#o.habitable<o.planets.habitable) then
-  add(o.habitable,planetconstruct(
+  if (#o.unhabitable<o.planets.unhabitable) then
+  add(o.unhabitable,planetconstruct(
    name,
    sx,
    sy,
@@ -126,8 +142,11 @@ o.planetcreate=function(o)
 end
 
 o.planetdraw=function(o)
- if (zoomstate==1) then
+ if (zoomstate==1 and o.state==1) then
   for planet in all(o.habitable) do
+   sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+  end
+  for planet in all(o.unhabitable) do
    sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
   end
  end
