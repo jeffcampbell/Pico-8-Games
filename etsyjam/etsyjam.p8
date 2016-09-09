@@ -19,10 +19,6 @@ o.update=function(o)
  o.pos.x-=o.speed
  elseif (btn(1)) then
  o.pos.x+=o.speed
--- elseif (btn(2)) then
--- o.pos.y-=o.speed
--- elseif (btn(3)) then
--- o.pos.y+=o.speed
  end
 end
 
@@ -63,10 +59,8 @@ end
 o.explode=function(bullet,enemy)
   for enemy in all(enemies) do
    if collide(bullet,enemy) then
---    sfx(00)
     score+=10
     sfx(01)
---    add(explosions,explosionconstruct(zombie.pos.x,zombie.pos.y))
     add(explosions,explosionconstruct(enemy.pos.x,enemy.pos.y))
     del(enemies,enemy)
     del(bullets,bullet)
