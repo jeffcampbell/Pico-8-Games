@@ -4,7 +4,6 @@ __lua__
 function _init()
 zoomstate=0
 zoomdetails={}
-rndpos=flr(rnd(128))
 add(scopes,scopeconstruct(64,64))
 end
 
@@ -67,6 +66,7 @@ o.pos={x=x,y=y}
 --number of planets
 o.planets={habitable=h,unhabitable=uh}
 
+
 o.habitable={}
 o.unhabitable={}
 
@@ -111,6 +111,7 @@ o.drawname=function(o)
  o.namecount=10
  end
 end
+
 
 o.planetcreate=function(o)
   local hname=test
@@ -221,7 +222,7 @@ end
 
 zoomdraw=function()
  foreach(systems, function(o)
-  o.drawplanet(o)
+  o.planetdraw(o)
  end)
 end
 
@@ -254,7 +255,6 @@ end
 systems.update=function()
  foreach(systems, function(o)
   o.planetcreate(o)
->>>>>>> zoom-experiment
  end)
 end
 
