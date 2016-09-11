@@ -34,10 +34,15 @@ o.examine=function(scope,system)
    system.state=1
    if (btnp(4)) then
     zoomstate=1
+    system.planetdetail=1
     zoomdetails=system
    end
   else
    system.state=0
+  end
+  if (btn(5)) then
+   zoomstate=0
+   system.planetdetail=0
   end
  end
 end
@@ -62,6 +67,9 @@ o.pos={x=x,y=y}
 --number of planets
 o.planets={habitable=h,unhabitable=uh}
 
+o.habitable={}
+o.unhabitable={}
+
 --system designation
 o.system=system
 
@@ -70,6 +78,7 @@ o.starcolor=starcolor
 
 --state machine
 o.state=0
+o.planetdetail=0
 
 --makes name scrolling work
 o.namecount=10
@@ -94,6 +103,7 @@ o.drawname=function(o)
   local name=(o.system .. "s" .. o.planets.habitable .. "e" .. o.planets.unhabitable .. "g")
   print(sub(name,o.namecount),o.pos.x-7,o.pos.y+17,5)
   print(sub(name,o.namecount),o.pos.x-8,o.pos.y+16,o.namecolor) 
+  
    if (o.namecount>0) then
     o.namecount-=0.5
    end
@@ -102,77 +112,71 @@ o.drawname=function(o)
  end
 end
 
-o.planetmap=function(o)
-  local hxy={x={0,16,32},y={32}}
-
-  o.planetdetails={
-  habitable={
-   name={},
-   sx={},
-   sy={},
-   posx={},
-   posy={}
-   },
-  unhabitable={
-   name={},
-   sx={},
-   sy={},
-   posx={},
-   posy={}
-   }
-  }
-
-if (zoomstate==1) then
-
-for x=1,o.planets.habitable do
-o.planetdetails.habitable.name[x]=x
-o.planetdetails.habitable.sx[x]=0
-o.planetdetails.habitable.sy[x]=32
-o.planetdetails.habitable.posx[x]=rndpos
-o.planetdetails.habitable.posy[x]=rndpos
+o.planetcreate=function(o)
+  local hname=test
+  local hsx=0
+  local hsy=32
+  local hposx=flr(rnd(100))+10
+  local hposy=flr(rnd(100))+10
+  local colorchoices={3,12}
+  local hclr=colorchoices[flr(rnd(1))+1]
+ 
+ 
+  if (#o.habitable<o.planets.habitable) then
+  add(o.habitable,planetconstruct(
+   hname,
+   hsx,
+   hsy,
+   hposx,
+   hposy,
+   hclr
+   ))
+  end
+  
+  local name=test
+  local sx=0
+  local sy=48
+  local posx=flr(rnd(100))+10
+  local posy=flr(rnd(100))+10
+  local clr=flr(rnd(3))+8
+ 
+  if (#o.unhabitable<o.planets.unhabitable) then
+  add(o.unhabitable,planetconstruct(
+   name,
+   sx,
+   sy,
+   posx,
+   posy,
+   clr
+   ))
+  end
 end
 
-for x=1,o.planets.unhabitable do
-o.planetdetails.unhabitable.name[x]=x
-o.planetdetails.unhabitable.sx[x]=0
-o.planetdetails.unhabitable.sy[x]=32
-o.planetdetails.unhabitable.posx[x]=rndpos
-o.planetdetails.unhabitable.posy[x]=rndpos
-end
-
-end
-
-end
-
-o.drawplanet=function(o)
-if (zoomstate==1) then
- if (o.planets.habitable~=nil) then
-   for x=1,o.planets.habitable do
-    sspr(
-    o.planetdetails.habitable.sx[x],
-    o.planetdetails.habitable.sy[x],
-    16,
-    16,
-    o.planetdetails.habitable.posx[x],
-    o.planetdetails.habitable.posy[x]
-    )
-   end
- end
- if (o.planets.unhabitable~=nil) then
-   for x=1,o.planets.unhabitable do
-    sspr(
-    o.planetdetails.unhabitable.sx[x],
-    o.planetdetails.unhabitable.sy[x],
-    16,
-    16,
-    o.planetdetails.unhabitable.posx[x],
-    o.planetdetails.unhabitable.posy[x]
-    )
-   end
+o.planetdraw=function(o)
+ if (zoomstate==1 and o.planetdetail==1) then
+  for planet in all(o.habitable) do
+   --sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+   circfill(planet.pos.x,planet.pos.y,8,planet.clr)
+  end
+  for planet in all(o.unhabitable) do
+   --sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+   circfill(planet.pos.x,planet.pos.y,8,planet.clr)
+  end
  end
 end
 
+return o
 end
+
+
+planetconstruct=function(name,sx,sy,posx,posy,clr)
+local o={}
+
+o.name=name
+o.sx=sx
+o.sy=sy
+o.pos={x=posx,y=posy}
+o.clr=clr
 
 return o
 end
@@ -216,7 +220,6 @@ systems.draw=function()
 end
 
 zoomdraw=function()
- circfill(60,60,6,zoomdetails.starcolor)
  foreach(systems, function(o)
   o.drawplanet(o)
  end)
@@ -227,8 +230,8 @@ systems.create=function()
  if (systemcount<100) then
   local x=flr(rnd(128))
   local y=flr(rnd(128))
-  local habitable=flr(rnd(5))
-  local unhabitable=flr(rnd(10))
+  local habitable=1 --flr(rnd(5))
+  local unhabitable=1 --flr(rnd(10))
   local starcolor=flr(rnd(2))+8
   add(systems,systemconstruct(
    x,
@@ -244,7 +247,14 @@ end
 
 systems.update=function()
  foreach(systems, function(o)
-  o.planetmap(o)
+  o.planetcreate(o)
+ end)
+end
+
+systems.update=function()
+ foreach(systems, function(o)
+  o.planetcreate(o)
+>>>>>>> zoom-experiment
  end)
 end
 
@@ -252,9 +262,6 @@ function _update()
  systems.create()
  systems.update()
  scopes.update()
- if (btn(5)) then
-  zoomstate=0
- end
 end
 
 function _draw()
