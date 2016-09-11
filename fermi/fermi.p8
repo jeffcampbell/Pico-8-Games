@@ -117,8 +117,8 @@ o.planetcreate=function(o)
   local hname=test
   local hsx=0
   local hsy=32
-  local hposx=flr(rnd(128))
-  local hposy=flr(rnd(128))
+  local hposx=32 --flr(rnd(128))
+  local hposy=32 --flr(rnd(128))
  
   if (#o.habitable<o.planets.habitable) then
   add(o.habitable,planetconstruct(
@@ -133,8 +133,8 @@ o.planetcreate=function(o)
   local name=test
   local sx=0
   local sy=48
-  local posx=flr(rnd(128))
-  local posy=flr(rnd(128))
+  local posx=64 --flr(rnd(128))
+  local posy=64 --flr(rnd(128))
  
   if (#o.unhabitable<o.planets.unhabitable) then
   add(o.unhabitable,planetconstruct(
@@ -224,8 +224,8 @@ systems.create=function()
  if (systemcount<100) then
   local x=flr(rnd(128))
   local y=flr(rnd(128))
-  local habitable=flr(rnd(5))
-  local unhabitable=flr(rnd(10))
+  local habitable=1 --flr(rnd(5))
+  local unhabitable=1 --flr(rnd(10))
   local starcolor=flr(rnd(2))+8
   add(systems,systemconstruct(
    x,
