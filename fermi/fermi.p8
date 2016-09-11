@@ -57,7 +57,7 @@ end
 return o
 end
 
-systemconstruct=function(x,y,system,h,uh,starcolor)
+systemconstruct=function(x,y,system,h,uh)
 local o={}
 
 --star position
@@ -73,9 +73,6 @@ o.unhabitable={}
 --system designation
 o.system=system
 
---star color
-o.starcolor=starcolor
-
 --state machine
 o.state=0
 o.planetdetail=0
@@ -84,11 +81,11 @@ o.planetdetail=0
 o.namecount=10
 
 --assign text color based on habital planets
-if (o.planets.habitable>3) then
+if (o.planets.habitable==2) then
  o.namecolor=11
-elseif (o.planets.habitable>2) then
+elseif (o.planets.habitable==1) then
  o.namecolor=10
-elseif (o.planets.habitable>1) then
+elseif (o.planets.habitable==0) then
  o.namecolor=9
 else
  o.namecolor=8
@@ -231,16 +228,28 @@ systems.create=function()
  if (systemcount<100) then
   local x=flr(rnd(128))
   local y=flr(rnd(128))
-  local habitable=1 --flr(rnd(5))
-  local unhabitable=1 --flr(rnd(10))
-  local starcolor=flr(rnd(2))+8
+  local unhabitable=flr(rnd(4))
+  
+  local fermi=flr(rnd(100))
+  if (fermi>20) then
+   local habitable=1
+  elseif (fermi>50) then
+   local habitable=2
+  elseif (fermi>80) then
+   local habitable=3
+  else
+   local habitable=0
+  end
+  
+  --debug
+  local habitable=1
+  
   add(systems,systemconstruct(
    x,
    y,
    #systems,
    habitable,
-   unhabitable,
-   starcolor
+   unhabitable
    ))
   systemcount+=1
  end
