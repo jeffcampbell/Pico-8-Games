@@ -66,6 +66,7 @@ o.pos={x=x,y=y}
 --number of planets
 o.planets={habitable=h,unhabitable=uh}
 
+
 o.habitable={}
 o.unhabitable={}
 
@@ -113,12 +114,14 @@ end
 
 
 o.planetcreate=function(o)
- 
   local hname=test
   local hsx=0
   local hsy=32
-  local hposx=32 --flr(rnd(128))
-  local hposy=32 --flr(rnd(128))
+  local hposx=flr(rnd(100))+10
+  local hposy=flr(rnd(100))+10
+  local colorchoices={3,12}
+  local hclr=colorchoices[flr(rnd(1))+1]
+ 
  
   if (#o.habitable<o.planets.habitable) then
   add(o.habitable,planetconstruct(
@@ -126,15 +129,17 @@ o.planetcreate=function(o)
    hsx,
    hsy,
    hposx,
-   hposy
+   hposy,
+   hclr
    ))
   end
   
   local name=test
   local sx=0
   local sy=48
-  local posx=64 --flr(rnd(128))
-  local posy=64 --flr(rnd(128))
+  local posx=flr(rnd(100))+10
+  local posy=flr(rnd(100))+10
+  local clr=flr(rnd(3))+8
  
   if (#o.unhabitable<o.planets.unhabitable) then
   add(o.unhabitable,planetconstruct(
@@ -142,7 +147,8 @@ o.planetcreate=function(o)
    sx,
    sy,
    posx,
-   posy
+   posy,
+   clr
    ))
   end
 end
@@ -150,10 +156,12 @@ end
 o.planetdraw=function(o)
  if (zoomstate==1 and o.planetdetail==1) then
   for planet in all(o.habitable) do
-   sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+   --sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+   circfill(planet.pos.x,planet.pos.y,8,planet.clr)
   end
   for planet in all(o.unhabitable) do
-   sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+   --sspr(planet.sx,planet.sy,16,16,planet.posx,planet.posy)
+   circfill(planet.pos.x,planet.pos.y,8,planet.clr)
   end
  end
 end
@@ -162,14 +170,14 @@ return o
 end
 
 
-planetconstruct=function(name,sx,sy,posx,posy)
+planetconstruct=function(name,sx,sy,posx,posy,clr)
 local o={}
 
 o.name=name
 o.sx=sx
 o.sy=sy
-o.posx=posx
-o.posy=posy
+o.pos={x=posx,y=posy}
+o.clr=clr
 
 return o
 end
@@ -213,7 +221,6 @@ systems.draw=function()
 end
 
 zoomdraw=function()
- circfill(60,60,6,zoomdetails.starcolor)
  foreach(systems, function(o)
   o.planetdraw(o)
  end)
@@ -237,6 +244,12 @@ systems.create=function()
    ))
   systemcount+=1
  end
+end
+
+systems.update=function()
+ foreach(systems, function(o)
+  o.planetcreate(o)
+ end)
 end
 
 systems.update=function()
