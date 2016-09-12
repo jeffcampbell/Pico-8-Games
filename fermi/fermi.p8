@@ -2,6 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 8
 __lua__
 function _init()
+gamestate=0
 zoomstate=0
 zoomdetails={}
 add(scopes,scopeconstruct(64,64))
@@ -24,6 +25,9 @@ o.control=function(o)
  end 
  if (btnp(0)) then
   o.pos.x-=o.speed
+ end
+ if (zoomstate==0 and gamestate==1 and btnp(5)) then
+  gamestate=0
  end
 end
 
@@ -81,12 +85,8 @@ o.planetdetail=0
 o.namecount=10
 
 --assign text color based on habital planets
-if (o.planets.habitable==2) then
+if (o.planets.habitable==1) then
  o.namecolor=11
-elseif (o.planets.habitable==1) then
- o.namecolor=10
-elseif (o.planets.habitable==0) then
- o.namecolor=9
 else
  o.namecolor=8
 end
@@ -225,24 +225,18 @@ end
 
 systemcount=0
 systems.create=function()
+ if (gamestate==1) then
  if (systemcount<100) then
   local x=flr(rnd(128))
   local y=flr(rnd(128))
   local unhabitable=flr(rnd(4))
   
-  local fermi=flr(rnd(100))
-  if (fermi>20) then
-   local habitable=1
-  elseif (fermi>50) then
-   local habitable=2
-  elseif (fermi>80) then
-   local habitable=3
+  local fermi=flr(rnd(100))  
+  if (fermi==1) then
+  habitable=1
   else
-   local habitable=0
+  habitable=0
   end
-  
-  --debug
-  local habitable=1
   
   add(systems,systemconstruct(
    x,
@@ -253,6 +247,7 @@ systems.create=function()
    ))
   systemcount+=1
  end
+ end
 end
 
 systems.update=function()
@@ -261,10 +256,15 @@ systems.update=function()
  end)
 end
 
-systems.update=function()
- foreach(systems, function(o)
-  o.planetcreate(o)
- end)
+function drawhomescreen()
+print("mini galaxy",50,44,2)
+print("by @jefferycampbell",30,54,2)
+print("move with arrow keys",30,84,2)
+print("press z to zoom in",32,94,2)
+print("press x to zoom out",31,104,2)
+if (btn(4)) then
+ gamestate=1
+end
 end
 
 function _update()
@@ -276,6 +276,10 @@ end
 function _draw()
  --clear screen
  cls()
+if (gamestate==0) then
+ drawhomescreen()
+
+else
 
 if (zoomstate==0) then
  systems.draw()
@@ -285,6 +289,7 @@ end
  -- scope should always be drawn
  -- last
  scopes.draw()
+end
 end
 __gfx__
 55550007700055555555000770005555000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
